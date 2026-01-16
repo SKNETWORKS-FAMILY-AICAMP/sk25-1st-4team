@@ -3,6 +3,10 @@ import pandas as pd
 import folium
 import requests
 
+# ✅ GeoJSON은 전역에서 1번만 로드 (Streamlit 재실행에도 캐시 가능)
+GEO_URL = "https://raw.githubusercontent.com/southkorea/southkorea-maps/master/kostat/2018/json/skorea-municipalities-2018-geo.json"
+geo_data = requests.get(GEO_URL).json()
+
 def filter_data(df, sido, sigungu, car, gubun):
     """
     필터링 함수
@@ -49,11 +53,9 @@ def draw_chart(dff, sido, sigungu, car, gubun, chart_type):
 
 
 
-# ✅ GeoJSON은 전역에서 1번만 로드 (Streamlit 재실행에도 캐시 가능)
-GEO_URL = "https://raw.githubusercontent.com/southkorea/southkorea-maps/master/kostat/2018/json/skorea-municipalities-2018-geo.json"
-geo_data = requests.get(GEO_URL).json()
 
-def draw_folium_map(pkl_path: str, year: int, vehicle_type: str):
+
+def draw_gugun_folium_map(pkl_path: str, year: int, vehicle_type: str):
     """
     vehicle_type: 'car' or 'van'
     return: folium.Map
@@ -120,3 +122,7 @@ def draw_folium_map(pkl_path: str, year: int, vehicle_type: str):
     )
 
     return m
+
+
+
+# def draw_sido_folium_map(pkl_path: str, year: int, vehicle_type: str):
