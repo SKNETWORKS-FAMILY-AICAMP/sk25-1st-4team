@@ -22,7 +22,7 @@ df_long = df
 
 store_df=pd.read_pickle("../data/hyundai_store.pkl")
 genderage_df=pd.read_pickle("../data/성별_연령별_데이터_통합.pkl")
-pkl_path="./data/군_승합_승용.pkl"
+pkl_path="../data/군_승합_승용.pkl"
 
 ##============================== URL query param으로 페이지 전환 ==============================##
 # Streamlit 버전에 따라 query_params API가 다를 수 있어서 둘 다 대응
