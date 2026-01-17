@@ -14,45 +14,45 @@ from utils.store import showhyundai_store, showkia_store, showgenesis_store
 
 
 st.set_page_config(page_title="Car Pick", layout="wide")
+##============================== 캐시 처리 ==============================##
 
-###============================== 데이터 호출 ==============================##
-df = pd.read_pickle("../data/자동차등록.pkl")
-df_long = df
-
-store_df=pd.read_pickle("../data/hyundai_store.pkl")
-genderage_df=pd.read_pickle("../data/성별_연령별_데이터_통합.pkl")
-GUGUN_PKL_PATH="../data/군_승합_승용.pkl"
-recommend_df=pd.read_pickle("../data/final_filter_data.pkl")
-
-sidocar_2022 = pd.read_pickle('../data/sido_category/sidocar_2022.pkl')
-sidocar_2023 = pd.read_pickle('../data/sido_category/sidocar_2023.pkl')
-sidocar_2024 = pd.read_pickle('../data/sido_category/sidocar_2024.pkl')
-sidovan_2022 = pd.read_pickle('../data/sido_category/sidovan_2022.pkl')
-sidovan_2023 = pd.read_pickle('../data/sido_category/sidovan_2023.pkl')
-sidovan_2024 = pd.read_pickle('../data/sido_category/sidovan_2024.pkl')
-
-##============================== 지도 캐시 처리 ==============================##
-
+## 데이터셋 호출 시 캐싱
 @st.cache_data(show_spinner=False)
 def cached_read_pickle(path: str) -> pd.DataFrame:
     return pd.read_pickle(path)
 
-@st.cache_data(show_spinner=False)
-def cached_draw_gugun_map(pkl_path: str, year: int, vehicle_type: str):
-    """
-    외부 함수 draw_gugun_folium_map 호출
-    """
-    # draw_gugun_folium_map 내부에서 pd.read_pickle을 다시 하니까
-    # 캐시 이득을 더 보려면 외부 함수도 full_df를 인자로 받게 리팩토링이 베스트지만,
-    # "외부 함수 그대로" 조건이라 여기서는 호출 캐시만 적용
-    return draw_gugun_folium_map(pkl_path=pkl_path, year=year, vehicle_type=vehicle_type)
+## 지도 호출 시 캐싱
+import streamlit as st
+import streamlit.components.v1 as components
 
 @st.cache_data(show_spinner=False)
-def cached_draw_sido_map(year: int, kind: str, sido_df: pd.DataFrame):
-    """
-    외부 함수 draw_sido_folium_map 호출
-    """
-    return draw_sido_folium_map(sido_df=sido_df, year=year, kind=kind)
+def cached_sido_map_html(sido_df: pd.DataFrame, year: int, kind: str) -> str:
+    m = draw_sido_folium_map(sido_df=sido_df, year=year, kind=kind)
+    return m.get_root().render()
+
+@st.cache_data(show_spinner=False)
+def cached_gugun_map_html(gugun_df: pd.DataFrame, year: int, vehicle_type: str) -> str:
+    m = draw_gugun_folium_map(full_df=gugun_df, year=year, vehicle_type=vehicle_type)
+    return m.get_root().render()
+
+###============================== 데이터 호출 ==============================##
+
+df = cached_read_pickle("../data/자동차등록.pkl")
+df_long = df
+
+store_df=cached_read_pickle("../data/hyundai_store.pkl")
+genderage_df=cached_read_pickle("../data/성별_연령별_데이터_통합.pkl")
+gugun_df=cached_read_pickle("../data/군_승합_승용.pkl")
+
+sidocar_2022 = cached_read_pickle('../data/sido_category/sidocar_2022.pkl')
+sidocar_2023 = cached_read_pickle('../data/sido_category/sidocar_2023.pkl')
+sidocar_2024 = cached_read_pickle('../data/sido_category/sidocar_2024.pkl')
+sidovan_2022 = cached_read_pickle('../data/sido_category/sidovan_2022.pkl')
+sidovan_2023 = cached_read_pickle('../data/sido_category/sidovan_2023.pkl')
+sidovan_2024 = cached_read_pickle('../data/sido_category/sidovan_2024.pkl')
+
+recommend_df=cached_read_pickle("../data/final_filter_data.pkl")
+
 
 
 ##============================== URL query param으로 페이지 전환 ==============================##
@@ -268,14 +268,13 @@ elif page == "region_trend":
     years = [2022, 2023, 2024]
     kind_labels = {"car": "승용(car)", "van": "승합(van)"}
 
-    # ✅ 너 app_2.py에 있는 변수명 그대로 매핑
     car_dfs_by_year = {2022: sidocar_2022, 2023: sidocar_2023, 2024: sidocar_2024}
     van_dfs_by_year = {2022: sidovan_2022, 2023: sidovan_2023, 2024: sidovan_2024}
 
     tab1, tab2 = st.tabs(["시도별 지도", "구 단위 지도"])
 
     # -------------------------
-    # 1) 시도별 지도 (draw_sido_folium_map)
+    # 1) 시도별 지도
     # -------------------------
     with tab1:
         c1, c2 = st.columns([1, 1])
@@ -284,19 +283,22 @@ elif page == "region_trend":
 
         sido_df = car_dfs_by_year[year] if kind == "car" else van_dfs_by_year[year]
 
-        m = draw_sido_folium_map(sido_df=sido_df, year=year, kind=kind)
-        st_folium(m, width="100%", height=650)
+        # ✅ 캐시된 HTML 렌더
+        html = cached_sido_map_html(sido_df=sido_df, year=year, kind=kind)
+        components.html(html, height=650)
 
     # -------------------------
-    # 2) 구 단위 지도 (draw_gugun_folium_map)
+    # 2) 구 단위 지도
     # -------------------------
     with tab2:
         c1, c2 = st.columns([1, 1])
         year = c1.selectbox("연도", years, index=len(years)-1, key="gugun_year")
         vehicle_type = c2.selectbox("차종", ["car", "van"], format_func=lambda x: kind_labels[x], key="gugun_kind")
 
-        m = draw_gugun_folium_map(pkl_path=GUGUN_PKL_PATH, year=year, vehicle_type=vehicle_type)
-        st_folium(m, width="100%", height=750)
+        # ✅ 캐시된 HTML 렌더
+        html = cached_gugun_map_html(gugun_df=gugun_df, year=year, vehicle_type=vehicle_type)
+        components.html(html, height=750)
+
 
 
 ###==============================[ 사이드 바 ] 성별 연령 추이 출력  ==============================##
