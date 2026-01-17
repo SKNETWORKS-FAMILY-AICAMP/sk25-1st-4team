@@ -188,10 +188,10 @@ if "page" not in st.session_state:
 
 st.sidebar.title("옵션 선택")
 
-# ---- 메뉴 버튼들 ----
-if st.sidebar.button("시도 별 추이", use_container_width=True):
-    st.session_state.page = "sido_trend"
-    set_qp({"page": "sido_trend"})
+# ---- 사이드 바 버튼 선언 ----
+if st.sidebar.button("시간 흐름 별 추이", use_container_width=True):
+    st.session_state.page = " time_trend"
+    set_qp({"page": "time_trend"})
     st.rerun()
 
 if st.sidebar.button("지역 별 추이", use_container_width=True):
@@ -221,20 +221,20 @@ if st.sidebar.button("지점 정보", use_container_width=True):
     st.rerun()
 st.sidebar.divider()
 
-# intro로 돌아가기
+# 첫 화면 돌아가기 버튼
 if st.sidebar.button("◀ 처음 화면으로", use_container_width=True):
     st.session_state.page = "intro"
     set_qp({"page": "intro"})
     st.rerun()
 
 
-
 # ============================== 페이지별 렌더링 ==============================
 
 page = st.session_state.page
+###==============================[ 사이드 바 ] 시간 흐름 별 추이 출력  ==============================##
 
-if page == "sido_trend":
-    st.title("시도 별 추이")
+if page == "time_trend":
+    st.title("시간 흐름 별 추이")
     col1, col2, col3, col4, col5 = st.columns([1.2, 1.2, 1, 1, 1])
 
     sido = col1.selectbox("시도명", sorted(df_long["시도명"].unique()), key="sido")
@@ -259,14 +259,14 @@ if page == "sido_trend":
     st.divider()
 
 
+###==============================[ 사이드 바 ] 지역 별 추이 출력  ==============================##
 
 elif page == "region_trend":
-    st.title("2) 지역 별 추이")
+    st.title("지역 별 추이")
 
     years = [2022, 2023, 2024]
     kind_labels = {"car": "승용(car)", "van": "승합(van)"}
 
-    # ✅ 너 app_2.py에 있는 변수명 그대로 매핑
     car_dfs_by_year = {2022: sidocar_2022, 2023: sidocar_2023, 2024: sidocar_2024}
     van_dfs_by_year = {2022: sidovan_2022, 2023: sidovan_2023, 2024: sidovan_2024}
 
@@ -297,16 +297,18 @@ elif page == "region_trend":
         st_folium(m, width="100%", height=750)
 
 
+###==============================[ 사이드 바 ] 성별 연령 추이 출력  ==============================##
 
 elif page == "gender_age_trend":
     st.set_page_config(layout="wide")
-    st.title("3) 성별 연령 추이")
+    st.title("성별 연령 추이")
     draw_gender_age_chart(genderage_df)
 
+###==============================[ 사이드 바 ]  필더식 추천 출력  ==============================##
 
 
 elif page == "recommend":
-    st.title("4) 필터식 추천")
+    st.title("필터식 추천")
     c1, c2, c3 = st.columns(3)
     with c1:
         gender = st.selectbox("성별", ["전체", "남성", "여성"])
@@ -335,8 +337,10 @@ elif page == "recommend":
     else:
         st.warning("추천 데이터를 구성 중입니다.")
 
+###==============================[ 사이드 바 ]  FAQ 출력  ==============================##
+
 elif page == "faq":
-    st.title("5) FAQ")
+    st.title("FAQ")
 
     # 0) 기본 선택값
     if "faq_brand" not in st.session_state:
@@ -376,12 +380,10 @@ elif page == "faq":
         showgenesisfaq()
 
 
+###==============================[ 사이드 바 ]  지점 정보 출력  ==============================##
+elif page == "carstore": 
+    st.title("지점 정보")
 
-
-elif page == "carstore": #구현 완료
-    st.title("5) 대리점 정보")
-
-   # st.set_page_config(layout="wide")
 
     # ----------------------------
     # 0) 브랜드 전용 세션 변수
@@ -392,15 +394,17 @@ elif page == "carstore": #구현 완료
     st.subheader("브랜드 선택")
     c1, c2, c3 = st.columns(3)
 
-
+    # ----------------------------
+    # 선택된 브랜드 앞에 ▶ 표시를 붙여 시각적 효과 부여하는 함수
+    # ----------------------------
     def brand_button(col, key, label):
         is_selected = (st.session_state.store_brand == key)
-        # 선택된 브랜드 앞에 ▶ 표시를 붙여 시각적 효과 부여
         btn_label = f"{'▶ ' if is_selected else ''}{label}"
         with col:
             if st.button(btn_label, use_container_width=True, key=f"store_btn_{key}"):
                 st.session_state.store_brand = key
                 st.rerun()
+
     brand_button(c1, "hyundai", "현대")
     brand_button(c2, "kia", "기아")
     brand_button(c3, "genesis", "제네시스")
@@ -427,6 +431,7 @@ elif page == "carstore": #구현 완료
         st.plotly_chart(fig, use_container_width=True)
 
 
+###============================== 특정 대시보드 외 페이지 처리 ==============================##
 elif page == "intro":
     st.title("Intro")
     st.info("처음 화면 내용")
