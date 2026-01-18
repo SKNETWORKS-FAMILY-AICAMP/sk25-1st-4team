@@ -4,13 +4,12 @@ import streamlit as st
 import streamlit.components.v1 as components
 from streamlit_folium import st_folium
 
+from demogr_car.visual import filter_car_regis_data,draw_car_regis_chart
+from demogr_car.visual import draw_gugun_folium_map, draw_sido_folium_map 
+from demogr_car.gen_age import draw_gender_age_chart
 
-from visualization.gen_age import draw_gender_age_chart
-from visualization.visual import filter_car_regis_data,draw_car_regis_chart
-from visualization.visual import draw_gugun_folium_map, draw_sido_folium_map 
-
-from utils.faq import showgenesisfaq, showhyundaifaq, showkiafaq
-from utils.store import showhyundai_store, showkia_store, showgenesis_store
+from brand_car.faq import showgenesisfaq, showhyundaifaq, showkiafaq
+from brand_car.store import showhyundai_store, showkia_store, showgenesis_store
 
 
 st.set_page_config(page_title="Car Pick", layout="wide")
@@ -53,7 +52,6 @@ sidovan_2023 = cached_read_pickle('../data/sido_category/sidovan_2023.pkl')
 sidovan_2024 = cached_read_pickle('../data/sido_category/sidovan_2024.pkl')
 
 recommend_df=cached_read_pickle("../data/final_filter_data.pkl")
-
 
 
 ##============================== URL query param으로 페이지 전환 ==============================##
