@@ -8,7 +8,7 @@ def draw_gender_age_chart(
     df_long: pd.DataFrame | None = None,
     *,
     file_path: str | None = None,
-    years: list[str] = ["2024", "2023", "2022"],
+    years: list[str] = ["2022","2023","2024"],
     gender_colors: dict[str, str] | None = None,
     default_year: str = "2024",
     default_mode: str = "전체 보기",
@@ -67,7 +67,7 @@ def draw_gender_age_chart(
     if default_mode not in modes:
         default_mode = modes[0]
 
-    mode = st.selectbox("mode", modes, index=modes.index(default_mode))
+    mode = st.selectbox("필터", modes, index=modes.index(default_mode))
 
     # -------------------------
     # 4) Plotly Figure 생성
