@@ -19,6 +19,7 @@
     <td align="center"><b>팀원 / Data Engineer</b></td>
     <td align="center"><b>팀원 / DBA</b></td>
     <td align="center"><b>팀원 / Data Engineer</b></td>
+
   </tr>
   <tr>
     <td valign="top">
