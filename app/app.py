@@ -12,17 +12,6 @@ from demogr_car.gen_age import draw_gender_age_chart
 from brand_car.faq import showgenesisfaq, showhyundaifaq, showkiafaq
 from brand_car.store import showhyundai_store, showkia_store, showgenesis_store
 
-from config.config import HOST,USER,PASSWD,DB,PORT
-@st.cache_resource
-def get_conn():
-    return MySQLdb.connect(
-        host= HOST,
-        user=USER,
-        passwd=PASSWD,
-        db=DB,
-        port=PORT
-        )
-
 
 st.set_page_config(page_title="Car Pick", layout="wide")
 ##============================== 캐시 처리 ==============================##

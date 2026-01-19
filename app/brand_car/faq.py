@@ -1,43 +1,15 @@
 import streamlit as st
 import pandas as pd
 import os
-import MySQLdb
-from config.config import HOST,USER,PASSWD,DB,PORT
-@st.cache_resource
-def get_conn():
-    return MySQLdb.connect(
-        host= HOST,
-        user=USER,
-        passwd=PASSWD,
-        db=DB,
-        port=PORT,
-        charset="utf8mb4",
-        )
-@st.cache_data(ttl=600)
-def load_faq_df():
-    """
-    DB의 faq 테이블에서 FAQ 전체를 DataFrame으로 로드
-    - 테이블/컬럼명이 다르면 아래 SQL을 너희 스키마에 맞춰 수정하면 됨
-    """
-    conn = get_conn()
 
-    sql = """
-    SELECT
-        company,
-        category,
-        question_text,
-        answer_text
-    FROM faq
-    """
-
-    return pd.read_sql(sql, conn)
 
 # ----------------------------
 # 공통 FAQ 표시 로직 (내부 함수)
 # ----------------------------
 def display_brand_faq(brand_name, select_key):
     try:
-        df = load_faq_df()  
+        file_path = '../data/FAQ_3company.pkl' 
+        df = pd.read_pickle(file_path)
         
         # 1. 해당 브랜드 데이터만 필터링 (company 컬럼 기준)
         brand_df = df[df['company'] == brand_name]
