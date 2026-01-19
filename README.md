@@ -178,7 +178,7 @@ SK25-1ST-4TEAM/
 <p align="center"><img src="./assets/faq_page.png" width="600"></p> 
 
 6. 지점 정보 page
-<p align="center"><img src="./assets/agency.png" width="600"></p> 
+<p align="center"><img src="./assets/agency_page.png" width="600"></p> 
 
 
 </br>
