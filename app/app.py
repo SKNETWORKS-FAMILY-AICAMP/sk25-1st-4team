@@ -3,6 +3,7 @@ import plotly.express as px
 import streamlit as st
 import streamlit.components.v1 as components
 from streamlit_folium import st_folium
+import MySQLdb
 
 from demogr_car.visual import filter_car_regis_data,draw_car_regis_chart
 from demogr_car.visual import draw_gugun_folium_map, draw_sido_folium_map 
@@ -10,6 +11,17 @@ from demogr_car.gen_age import draw_gender_age_chart
 
 from brand_car.faq import showgenesisfaq, showhyundaifaq, showkiafaq
 from brand_car.store import showhyundai_store, showkia_store, showgenesis_store
+
+from config.config import HOST,USER,PASSWD,DB,PORT
+@st.cache_resource
+def get_conn():
+    return MySQLdb.connect(
+        host= HOST,
+        user=USER,
+        passwd=PASSWD,
+        db=DB,
+        port=PORT
+        )
 
 
 st.set_page_config(page_title="Car Pick", layout="wide")
