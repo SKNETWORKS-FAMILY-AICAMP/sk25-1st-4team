@@ -161,33 +161,67 @@ SK25-1ST-4TEAM/
 
 </br>
 
-# 5. 주요 기능 
-1. 시간 흐름 별 추이 page
-<p align="center"><img src="./assets/time_page.png" width="600"></p> 
+# 5. 트러블 슈팅
+### 데이터 설계 및 최적화 (성능과 정합성) </br>
+"데이터 무결성이 분석의 가치를 결정" </br>
+Problem 
+- 행정구역 명칭 불일치(서울 vs 서울특별시)로 인한 시각화 데이터 누락 발생.
+- 대용량 CSV 파일 로딩으로 인한 시스템 속도 저하 및 지연. </br>
 
-2. 지역 별 추이 page
-<p align="center"><img src="./assets/region_page.png" width="600"></p> 
+Solution
+- 표준화: 매핑 테이블 구축을 통한 지역명 통일 및 중복 데이터 정제.
+- 최적화: 내부 연산 포맷을 **Pickle(.pkl)**로 전환하여 로딩 속도 5배 향상. </br>
 
-3. 성별 연령 추이 page
-<p align="center"><img src="./assets/age_page.png" width="600"></p> 
-
-4. 필터식 추천 page
-<p align="center"><img src="./assets/filter_page.png" width="600"></p> 
-
-5. FAQ page
-<p align="center"><img src="./assets/faq_page.png" width="600"></p> 
-
-6. 지점 정보 page
-<p align="center"><img src="./assets/agency_page.png" width="600"></p> 
-
+Learned
+- "Garbage In, Garbage Out." 정교한 전처리가 인사이트의 질을 결정한다는 사실을 체감.
+- 시스템 안정성을 위한 데이터 거버넌스와 규격화의 중요성 인지. </br>
 
 </br>
 
-# 6. 트러블 슈팅
+### 협업을 위한 코드 리팩토링 (가독성과 효율) </br>
+"지속 가능한 개발을 위한 팀 표준 정립" </br>
+Problem
+- 절대 경로 사용으로 인한 코드 통합 오류, 모호한 함수명(draw_chart)으로 유지보수 어려움.
+
+Solution
+- 구조화: 전체 코드를 상대 경로 기반으로 수정하여 환경 독립성 확보.
+- 의미 있는 명명: draw_car_regis_chart 등 기능 명시적 수정으로 분석 시간 단축. 
+
+Learned
+- 공통 가이드라인과 명확한 코드 규격이 협업의 병목 현상을 해결함. </br>
 
 </br>
 
-# 7. 기술 스택 
+### 기술적 난제 해결 (크롤링과 시각화) </br>
+"사용자 경험을 고려한 고도화된 데이터 처리" </br>
+Problem 
+- 동적 데이터 수집 불가 및 시각화 시 '전국 합계'로 인한 수치 왜곡 발생
+
+Solution
+- 크롤링: 정적 방식의 한계를 Selenium으로 극복, HTML 태그를 정제하여 깨끗한 텍스트 확보.
+- 시각화: 지도 데이터에서 '전국 합계' 제거로 지역별 변별력 확보(색상 왜곡 해결).
+- 가동성: GeoJsonTooltip 도입으로 마우스 오버 시 실시간 수치 확인 기능 구현.
+
+Learned
+- 단순 수집을 넘어 데이터의 재사용성과 시각적 정확성을 고려한 프로세스 구축.
+
+</br>
+
+### 시각화 호출 속도 병목 현상
+"Folium 지도 로딩 속도 최적화 (11s → 4s)" 
+Problem 
+- 지도 데이터 반복 생성 및 외부 GeoJSON 호출로 인한 심각한 로딩 지연 (평균 11초)
+
+Solution
+- 최적화: 메모리 캐싱 및 GeoJSON 전역 변수 로드 방식으로 네트워크 병목 해소
+- 렌더링: Static HTML 캐싱을 적용하여 로딩 속도 60% 단축 (11s → 4s)
+
+Learned 
+- 단순 구현을 넘어 캐싱과 리소스 로컬화를 통한 시스템 최적화 및 UX 개선의 중요성 체감
+
+</br>
+
+# 6. 기술 스택 
 ### ⚙️ Development Environment
 * **Language & Library** : 
   ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
@@ -201,7 +235,7 @@ SK25-1ST-4TEAM/
 
 </br>
 
-# 8. 한줄 회고
+# 7. 한줄 회고
 > **김나연** : 여러 기능을 하나의 웹페이지에 구현하기 위해서는 다같이 코드를 작성하기 전 함수명 정의와 변수명 정의가 필요함을 배울 수 있었습니다.  웹 서비스를 제작하는 것은 곧 사용자가 있는 것이므로, 추후 프로젝트 발전 시에는 사용자의 피드백을 통한 기능을 수정하고, 속도를 개선하고 싶습니다. </br>
 
 > **김서현** :  생소했던 파이썬을 처음 다루며 초기에는 많은 시행착오를 겪었으나, 팀원들과 소통하며 데이터 정제의 중요성을 깊이 체감했습니다. 수업에서 배운 이론을 실제 엔진 구축에 적용해보며, 막연했던 코딩이 실질적인 가치로 변하는 과정을 경험한 매우 유익한 시간이었습니다. </br>
